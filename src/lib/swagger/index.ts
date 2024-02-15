@@ -2,6 +2,8 @@ import express from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import { serve, setup } from "swagger-ui-express";
 import config from "../../../endrun.config";
+import { db } from "../db";
+import { Prisma, Product } from "@prisma/client";
 
 const options = {
   definition: {
@@ -25,94 +27,7 @@ const options = {
       },
     ],
 
-    paths: {
-      "/products": {
-        get: {
-          operationId: "getModel",
-          summary: "Get Model",
-          responses: {
-            "200": {
-              description: "200 response",
-              content: {
-                "application/json": {
-                  examples: {
-                    example_1: {
-                      value: [
-                        {
-                          id: "clsn3at990001r48v66w07uw3",
-                          title: "test2 product",
-                          description: "test2 description product",
-                          price: 150000,
-                          createdAt: "2024-02-15T10:40:16.791Z",
-                          updatedAt: "2024-02-15T10:40:16.791Z",
-                        },
-                      ],
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        post: {
-          operationId: "postModel",
-          summary: "Post Model",
-          parameters: [
-            {
-              name: "title",
-              required: true,
-              description: "title",
-              schema: {
-                type: "string",
-                example: "Laptop hp 2Ghz",
-              },
-            },
-            {
-              name: "description",
-              required: true,
-              description: "description",
-              schema: {
-                type: "string",
-                example: "this is description",
-              },
-            },
-            {
-              name: "price",
-              required: true,
-              description: "price",
-              schema: {
-                type: "number",
-                format: "number",
-                example: "1600000",
-              },
-            },
-          ],
-          responses: {
-            "200": {
-              description: "200 response",
-              content: {
-                "application/json": {
-                  examples: {
-                    example_1: {
-                      value: [
-                        {
-                          id: "clsn3at990001r48v66w07uw3",
-                          title: "test2 product",
-                          description: "test2 description product",
-                          price: 150000,
-                          createdAt: "2024-02-15T10:40:16.791Z",
-                          updatedAt: "2024-02-15T10:40:16.791Z",
-                        },
-                      ],
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    paths: {},
   },
   apis: ["../Routes/*.ts"],
 };
@@ -148,6 +63,15 @@ config.endpoints.forEach((endpoint) => {
   specs.paths[pathKey][endpoint.method.toLowerCase()] = {
     description: description,
     parameters: [],
+    requestBody: endpoint.method === "POST" && {
+      content: {
+        "application/json": {
+          schema: {
+            $ref: `#/components/schemas/${endpoint.model.toLowerCase()}`, // Reference to Prisma model
+          },
+        },
+      },
+    },
     responses: {
       200: {
         description: "Successful operation",
@@ -176,6 +100,39 @@ config.endpoints.forEach((endpoint) => {
         type: "string",
       },
     });
+  }
+
+  // Add components for Prisma models
+  //@ts-ignore
+  specs.components = {
+    schemas: {},
+  };
+
+  // Generate schemas for Prisma models
+  for (const model of Object.keys(db)) {
+    if (!model.startsWith("_") && !model.startsWith("$")) {
+      //@ts-ignore
+      specs.components.schemas[model] = {
+        type: "object",
+        properties: {}, // Properties for fields in the model
+      };
+      //@ts-ignore
+      const fields = Prisma.dmmf.datamodel.models.find(
+        (model) => model.name === endpoint.model
+      ).fields;
+      for (const field of fields) {
+        if (
+          field.name !== "id" &&
+          field.name !== "createdAt" &&
+          field.name !== "updatedAt"
+        ) {
+          //@ts-ignore
+          specs.components.schemas[model].properties[field.name] = {
+            type: field.type, // Set type based on Prisma field type
+          };
+        }
+      }
+    }
   }
 });
 

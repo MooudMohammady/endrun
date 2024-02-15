@@ -3,6 +3,8 @@ import { db } from "./lib/db";
 import APIFeatures from "./lib/ApiFeatures";
 import express, { Express } from "express";
 import { swagger } from "./lib/swagger";
+import { DefaultArgs, PrismaClientOptions } from "@prisma/client/runtime/library";
+import { PrismaClient, Product } from "@prisma/client";
 
 const app: Express = express();
 const router = express.Router();
@@ -12,7 +14,7 @@ app.use(express.json())
 app.use("/swagger",swagger);
 
 
-config.endpoints.forEach((endpoint) => {
+config.endpoints.forEach((endpoint) => {  
   const method = endpoint.method.toLowerCase() as
     | "get"
     | "post"
