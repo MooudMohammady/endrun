@@ -1,10 +1,16 @@
-import { serve } from "@hono/node-server";
-import { Context, Hono } from "hono";
 import config from "../endrun.config";
 import { db } from "./lib/db";
 import APIFeatures from "./lib/ApiFeatures";
+import express, { Express } from "express";
+import { swagger } from "./lib/swagger";
 
-const app = new Hono().basePath("/api");
+const app: Express = express();
+const router = express.Router();
+
+app.use(express.urlencoded({extended:false}))
+app.use(express.json())
+app.use("/swagger",swagger);
+
 
 config.endpoints.forEach((endpoint) => {
   const method = endpoint.method.toLowerCase() as
@@ -12,74 +18,74 @@ config.endpoints.forEach((endpoint) => {
     | "post"
     | "put"
     | "delete";
-  app[method](endpoint.route, async (c: Context) => {
+  router[method](endpoint.route, async (req,res) => {
     let result;
 
-    if (c.req.method === "GET") {
+    if (req.method === "GET") {
       switch (endpoint.operation) {
         case "all":
           //@ts-ignore
           result = await db[endpoint.model.toLowerCase()].findMany();
-          return c.json(result);
+          return res.json(result);
         case "one":
           //@ts-ignore
           result = await db[endpoint.model.toLowerCase()].findMany({
             where: {
-              id: c.req.param("id"),
+              id: req.param("id"),
             },
           });
-          return c.json(result);
+          return res.json(result);
         case "search":
           //@ts-ignore
           const apiFeatures = (await new APIFeatures(
             //@ts-ignore
             db[endpoint.model.toLowerCase()],
-            //@ts-ignore
             prisma,
-            c.req.queries()
+            req.query
           )
             .filter())
 
           result = await apiFeatures.query;
 
-          return c.json(result);
+          return res.json(result);
       }
-    } else if (c.req.method === "POST") {
+    } else if (req.method === "POST") {
       //@ts-ignore
       result = await db[endpoint.model.toLowerCase()].create({
-        data: await c.req.json(),
+        data: await res.json(),
       });
-      return c.json(result);
-    } else if (c.req.method === "PUT") {
+      return res.json(result);
+    } else if (req.method === "PUT") {
       //@ts-ignore
       result = await db[endpoint.model.toLowerCase()].upsert({
-        create: await c.req.json(),
-        update: await c.req.json(),
+        create: await res.json(),
+        update: await res.json(),
         where: {
-          id: c.req.param("id"),
+          id: req.param("id"),
         },
       });
-      return c.json(result);
-    } else if (c.req.method === "DELETE") {
+      return res.json(result);
+    } else if (req.method === "DELETE") {
       //@ts-ignore
       result = await db[endpoint.model.toLowerCase()].delete({
         where: {
-          id: c.req.param("id"),
+          id: req.param("id"),
         },
       });
     }
-    return c.text("Endpoint is working!");
+    return res.send("Endpoint is working!");
   });
 });
 
-app.get("*", (c) => {
-  return c.text("404 not found!");
+app.use("/api",router)
+
+app.get("*", (req,res) => {
+  return res.send("404 not found!");
 });
 
 const port = 3030;
 console.log(`Server is running on port ${port}`);
 
-serve({
-  fetch: app.fetch,
-  port,
+app.listen(port, () => {
+  console.log(`server running on http://localhost:${port}`);
 });

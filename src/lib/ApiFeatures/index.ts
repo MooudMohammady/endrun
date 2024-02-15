@@ -77,7 +77,6 @@ class APIFeatures {
     };
 
     this.query = await this.query.findMany(filterOptions);
-    console.log(queryObj, this.queryString);
     
     // this.total = await this.query.count();
 

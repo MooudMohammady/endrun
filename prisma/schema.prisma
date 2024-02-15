@@ -13,4 +13,6 @@ model Product {
   title       String
   description String?
   price       Float   @default(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
