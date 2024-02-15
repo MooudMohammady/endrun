@@ -8,8 +8,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id String @id @default(uuid())
-  username String 
-  email String
+model Product {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  price       Float   @default(100)
 }

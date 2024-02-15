@@ -2,24 +2,45 @@ const config: Config = {
   endpoints: [
     {
       method: "GET",
-      route: "/user",
-      model: "User",
+      route: "/products",
+      model: "Product",
       operation: "all",
     },
     {
       method: "GET",
-      route: "/user/:id",
-      model: "User",
+      route: "/products/:id",
+      model: "Product",
       operation:"one"
+    },
+    {
+      method: "GET",
+      route: "/search",
+      model: "Product",
+      operation:"search"
+    },
+    {
+      method: "POST",
+      route: "/products",
+      model: "Product",
+    },
+    {
+      method: "PUT",
+      route: "/products/:id",
+      model: "Product",
+    },
+    {
+      method: "DELETE",
+      route: "/products/:id",
+      model: "Product",
     },
   ],
 };
 
 export interface Endpoint {
-  method: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   route: string;
-  model: "User";
-  operation: "all" | "one" | "filter";
+  model: "Product";
+  operation?: "all" | "one" | "search";
 }
 
 export interface Config {
