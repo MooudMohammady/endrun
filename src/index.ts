@@ -1,18 +1,33 @@
 import { serve } from "@hono/node-server";
 import { Context, Hono } from "hono";
-import { readFileSync } from "fs";
+import config, { Endpoint } from "../endrun.config";
+import { db } from "./lib/db";
 
 const app = new Hono();
 
-const configData = readFileSync("endrun.config.json", "utf-8");
-const config = JSON.parse(configData);
-
-config.endpoints.forEach((endpoint: { method: string; route: any }) => {
+config.endpoints.forEach((endpoint: Endpoint) => {
   //@ts-ignore
-  app[endpoint.method.toLowerCase()](endpoint.route, (c: Context) => {
+  app[endpoint.method.toLowerCase()](endpoint.route, async (c: Context) => {
+    let result;
     if (c.req.method === "GET") {
-      
-      return c.text("hello");
+      switch (endpoint.operation) {
+        case "all":
+          //@ts-ignore
+          result = await db[endpoint.model.toLowerCase()].findMany();
+          return c.json({
+            result,
+          });
+        case "one":
+          //@ts-ignore
+          result = await db[endpoint.model.toLowerCase()].findMany({
+            where: {
+              id: c.req.param("id"),
+            },
+          });
+          return c.json({
+            result,
+          });
+      }
     } else if (c.req.method === "POST") {
     } else if (c.req.method === "PUT") {
     } else if (c.req.method === "DELETE") {

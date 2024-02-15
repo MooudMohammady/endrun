@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "postinstall":"prisma generate"
   },
   "dependencies": {
     "@hono/node-server": "^1.7.0",
