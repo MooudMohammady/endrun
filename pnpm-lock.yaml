@@ -37,9 +37,6 @@ devDependencies:
   nodemon:
     specifier: ^3.0.3
     version: 3.0.3
-  rimraf:
-    specifier: ^5.0.5
-    version: 5.0.5
   ts-node:
     specifier: ^10.9.2
     version: 10.9.2(@types/node@20.11.17)(typescript@5.3.3)
@@ -3041,14 +3038,6 @@ packages:
   /reusify@1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
-    dev: true
-
-  /rimraf@5.0.5:
-    resolution: {integrity: sha512-CqDakW+hMe/Bz202FPEymy68P+G50RfMQK+Qo5YUqc9SPipvbGjCGKd0RSKEelbsfQuw3g5NZDSrlZZAJurH1A==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dependencies:
-      glob: 10.3.10
     dev: true
 
   /rollup@4.11.0:

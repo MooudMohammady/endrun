@@ -11,7 +11,7 @@
   },
   "version": "1.0.1",
   "scripts": {
-    "build": "rimraf dist && tsup index.ts --format cjs,esm --dts",
+    "build": "tsup index.ts --format cjs,esm --dts",
     "start": "node dist/src/index.js",
     "dev": "nodemon src/server.ts",
     "lint": "tsc",
@@ -51,7 +51,6 @@
     "@types/node": "^20.11.17",
     "@types/swagger-ui-express": "^4.1.6",
     "nodemon": "^3.0.3",
-    "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
     "tsx": "^3.12.2",
