@@ -15,7 +15,7 @@
     "start": "node dist/src/index.js",
     "dev": "nodemon src/server.ts",
     "lint": "tsc",
-    "release": "pnpm run build && changeset publish",
+    "release": "npm run build && changeset publish",
     "postinstall": "prisma generate"
   },
   "repository": {
