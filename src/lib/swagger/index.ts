@@ -117,7 +117,9 @@ endpoints.forEach((endpoint) => {
       properties: {}, // Properties for fields in the model
     };
 
+    //@ts-ignore
     let fields = Prisma.dmmf.datamodel.models.find(
+      //@ts-ignore
       (model) => model.name === endpoint.model
     )!.fields;
 

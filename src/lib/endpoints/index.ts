@@ -8,6 +8,7 @@ interface Endpoint {
 }
 
 const endpoints: Endpoint[] = [];
+//@ts-ignore
 Prisma.dmmf.datamodel.models.forEach(m=>{
   endpoints.push(
     {
