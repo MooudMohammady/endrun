@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import endpoints from "./src/lib/endpoints";
-import { db } from "./src/lib/db";
-import APIFeatures from "./src/lib/ApiFeatures";
-import { swagger } from "./src/lib/swagger";
+import endpoints from "./lib/endpoints";
+import { db } from "./lib/db";
+import APIFeatures from "./lib/ApiFeatures";
+import { swagger } from "./lib/swagger";
 
 // Define types for endpoint configuration
 interface Endpoint {
@@ -117,4 +117,6 @@ class Endrun {
   }
 }
 
-export default Endrun;
+export {
+  Endrun
+}

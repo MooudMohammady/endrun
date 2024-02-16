@@ -9,10 +9,10 @@
     "email": "MooudMohammadi@gmail.com",
     "name": "Mooud Mohammadi tabar"
   },
-  "version": "1.0.1",
+  "version": "0.0.1",
   "scripts": {
-    "build": "tsup index.ts --format cjs,esm --dts",
-    "start": "node dist/src/index.js",
+    "build": "tsup",
+    "start": "node dist/index.js",
     "dev": "nodemon src/server.ts",
     "lint": "tsc",
     "release": "npm run build && changeset publish",

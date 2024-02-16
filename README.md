@@ -30,7 +30,7 @@ To get started with Endrun, follow these simple steps:
 1. Install Endrun using npm:
 
 `
-npm install endrun
+npm install endrun dotenv prisma
 `
 
 vbnet
@@ -47,8 +47,21 @@ Copy code
 Here's a simple example of how to use Endrun to create an API endpoint:
 
 ```typescript
-import Endrun from 'endrun';
+// index.ts
 
-const PORT = process.env.PORT || 3030
+import {Endrun} from 'endrun';
+import dotenv from 'dotenv';
 
-new Endrun().startServer(PORT)
+dotenv.config();
+
+const PORT = process.env.PORT || 3030;
+
+new Endrun().startServer(PORT);
+```
+
+and add the database address in the .env file :
+```env
+// .env
+
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/endrun
+```

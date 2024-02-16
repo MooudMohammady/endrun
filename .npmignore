@@ -1,0 +1,7 @@
+/node_modules
+.env*
+Note.md
+/src
+tsconfig.json
+/images
+/test
