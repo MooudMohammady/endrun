@@ -16,4 +16,5 @@ jobs:
         with:
           node-version: 16.x
           cache: "pnpm"
+      - run: pnpm i
       - run: pnpm run lint && pnpm run build
