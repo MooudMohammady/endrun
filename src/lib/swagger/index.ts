@@ -37,6 +37,11 @@ const router = express.Router();
 
 const specs = swaggerJSDoc(options) as IswaggerJSDoc;
 
+// Add components for Prisma models
+specs.components = {
+  schemas: {},
+};
+
 endpoints.forEach((endpoint) => {
   const operation = endpoint.operation || "";
   let description = "";
@@ -64,8 +69,8 @@ endpoints.forEach((endpoint) => {
     description: description,
     parameters: [],
     requestBody:
-      endpoint.method === "POST" ||
-      (endpoint.method === "PUT" && {
+      (endpoint.method === "POST" ||
+      endpoint.method === "PUT") && {
         content: {
           "application/json": {
             schema: {
@@ -73,7 +78,7 @@ endpoints.forEach((endpoint) => {
             },
           },
         },
-      }),
+      },
     responses: {
       200: {
         description: "Successful operation",
@@ -103,16 +108,10 @@ endpoints.forEach((endpoint) => {
     });
   }
 
-  // Add components for Prisma models
-  specs.components = {
-    schemas: {},
-  };
-
   const model = endpoint.model.toLowerCase();
 
   // Generate schemas for Prisma models
   if (!model.startsWith("_") && !model.startsWith("$")) {
-
     specs.components.schemas![model] = {
       type: "object",
       properties: {}, // Properties for fields in the model
@@ -122,15 +121,12 @@ endpoints.forEach((endpoint) => {
       (model) => model.name === endpoint.model
     )!.fields;
 
-    console.log(specs.components.schemas);
-
     for (const field of fields) {
       if (
         field.name !== "id" &&
         field.name !== "createdAt" &&
         field.name !== "updatedAt"
       ) {
-
         let modelSchema = specs.components.schemas![model];
 
         modelSchema.properties[field.name] = { type: field.type };
@@ -138,9 +134,6 @@ endpoints.forEach((endpoint) => {
     }
   }
 });
-
-
-console.log(specs.components.schemas);
 
 router.use(serve, setup(specs));
 
