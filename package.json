@@ -1,4 +1,12 @@
 {
+  "name": "endrun",
+  "description": "Endrun is a simple and powerful web API framework that dynamically generates endpoints and Swagger documentation based on database models using Prisma ORM.",
+  "license": "GPL-3.0-only",
+  "author": {
+    "email": "MooudMohammadi@gmail.com",
+    "name": "Mooud Mohammadi tabar"
+  },
+  "version": "1.0.0",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/src/index.js",
