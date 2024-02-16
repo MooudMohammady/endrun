@@ -50,13 +50,6 @@ Here's a simple example of how to use Endrun to create an API endpoint:
 ```typescript
 import Endrun from 'endrun';
 
-const app = new Endrun();
+const PORT = process.env.PORT || 3030
 
-app.get('/products', async (req, res) => {
-const products = await Product.find();
-res.json(products);
-});
-
-app.listen(3000, () => {
-console.log('Server is running on port 3000');
-});
+new Endrun().startServer(PORT)
