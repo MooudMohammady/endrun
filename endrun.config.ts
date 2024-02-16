@@ -1,6 +1,11 @@
 const config: Config = {
   endpoints: [
     {
+      method: "POST",
+      route: "/users",
+      model: "User",
+    },
+    {
       method: "GET",
       route: "/products",
       model: "Product",
@@ -39,7 +44,7 @@ const config: Config = {
 export interface Endpoint {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   route: string;
-  model: "Product";
+  model: "Product" | string;
   operation?: "all" | "one" | "search";
 }
 

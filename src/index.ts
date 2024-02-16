@@ -23,59 +23,65 @@ config.endpoints.forEach((endpoint) => {
   router[method](endpoint.route, async (req,res) => {
     let result;
 
-    if (req.method === "GET") {
-      switch (endpoint.operation) {
-        case "all":
-          //@ts-ignore
-          result = await db[endpoint.model.toLowerCase()].findMany();
-          return res.json(result);
-        case "one":
-          //@ts-ignore
-          result = await db[endpoint.model.toLowerCase()].findMany({
-            where: {
-              id: req.param("id"),
-            },
-          });
-          return res.json(result);
-        case "search":
-          //@ts-ignore
-          const apiFeatures = (await new APIFeatures(
+    try {
+      if (req.method === "GET") {
+        switch (endpoint.operation) {
+          case "all":
             //@ts-ignore
-            db[endpoint.model.toLowerCase()],
-            prisma,
-            req.query
-          )
-            .filter())
-
-          result = await apiFeatures.query;
-
-          return res.json(result);
+            result = await db[endpoint.model.toLowerCase()].findMany();
+            return res.json(result);
+          case "one":
+            //@ts-ignore
+            result = await db[endpoint.model.toLowerCase()].findMany({
+              where: {
+                id: req.params.id,
+              },
+            });
+            return res.json(result);
+          case "search":
+            //@ts-ignore
+            const apiFeatures = (await new APIFeatures(
+              //@ts-ignore
+              db[endpoint.model.toLowerCase()],
+              prisma,
+              req.query
+            )
+              .filter())
+  
+            result = await apiFeatures.query;
+  
+            return res.json(result);
+        }
+      } else if (req.method === "POST") {
+        //@ts-ignore
+        result = await db[endpoint.model.toLowerCase()].create({
+          data: await req.body,
+        });
+        return res.json(result);
+      } else if (req.method === "PUT") {
+        //@ts-ignore
+        result = await db[endpoint.model.toLowerCase()].upsert({
+          create: await req.body,
+          update: await req.body,
+          where: {
+            id: req.params.id,
+          },
+        });
+        return res.json(result);
+      } else if (req.method === "DELETE") {
+        //@ts-ignore
+        result = await db[endpoint.model.toLowerCase()].delete({
+          where: {
+            id: req.params.id,
+          },
+        });
       }
-    } else if (req.method === "POST") {
-      //@ts-ignore
-      result = await db[endpoint.model.toLowerCase()].create({
-        data: await res.json(),
-      });
-      return res.json(result);
-    } else if (req.method === "PUT") {
-      //@ts-ignore
-      result = await db[endpoint.model.toLowerCase()].upsert({
-        create: await res.json(),
-        update: await res.json(),
-        where: {
-          id: req.param("id"),
-        },
-      });
-      return res.json(result);
-    } else if (req.method === "DELETE") {
-      //@ts-ignore
-      result = await db[endpoint.model.toLowerCase()].delete({
-        where: {
-          id: req.param("id"),
-        },
-      });
+      return res.send("Endpoint is working!");
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error)
+      throw error;
     }
-    return res.send("Endpoint is working!");
   });
 });
 

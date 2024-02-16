@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "dev": "nodemon ./src/index.ts",
+    "build": "npx tsc",
+    "start": "node dist/src/index.js",
+    "dev": "nodemon src/index.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

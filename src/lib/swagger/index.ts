@@ -63,7 +63,7 @@ config.endpoints.forEach((endpoint) => {
   specs.paths[pathKey][endpoint.method.toLowerCase()] = {
     description: description,
     parameters: [],
-    requestBody: endpoint.method === "POST" && {
+    requestBody: endpoint.method === "POST" || endpoint.method === "PUT" && {
       content: {
         "application/json": {
           schema: {
@@ -107,9 +107,9 @@ config.endpoints.forEach((endpoint) => {
   specs.components = {
     schemas: {},
   };
-
+  //@ts-ignore
+  const model = endpoint.model.toLowerCase();
   // Generate schemas for Prisma models
-  for (const model of Object.keys(db)) {
     if (!model.startsWith("_") && !model.startsWith("$")) {
       //@ts-ignore
       specs.components.schemas[model] = {
@@ -117,24 +117,33 @@ config.endpoints.forEach((endpoint) => {
         properties: {}, // Properties for fields in the model
       };
       //@ts-ignore
-      const fields = Prisma.dmmf.datamodel.models.find(
+      let fields = Prisma.dmmf.datamodel.models.find(
         (model) => model.name === endpoint.model
-      ).fields;
+        ).fields;
+        //@ts-ignore
+      console.log(specs.components.schemas);
+      //@ts-ignore
       for (const field of fields) {
         if (
           field.name !== "id" &&
           field.name !== "createdAt" &&
           field.name !== "updatedAt"
         ) {
+          
+          
           //@ts-ignore
-          specs.components.schemas[model].properties[field.name] = {
-            type: field.type, // Set type based on Prisma field type
-          };
+          let modelSchema = specs.components.schemas[model]
+          //@ts-ignore
+
+          modelSchema.properties[field.name] = { type: field.type };
         }
       }
+      
     }
-  }
-});
+  });
+  //@ts-ignore
+
+console.log(specs.components.schemas);
 
 router.use(serve, setup(specs));
 
