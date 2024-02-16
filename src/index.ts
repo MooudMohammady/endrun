@@ -1,10 +1,8 @@
-import config from "../endrun.config";
 import { db } from "./lib/db";
 import APIFeatures from "./lib/ApiFeatures";
 import express, { Express } from "express";
 import { swagger } from "./lib/swagger";
-import { DefaultArgs, PrismaClientOptions } from "@prisma/client/runtime/library";
-import { PrismaClient, Product } from "@prisma/client";
+import endpoints from "./lib/endpoints";
 
 const app: Express = express();
 const router = express.Router();
@@ -14,7 +12,7 @@ app.use(express.json())
 app.use("/swagger",swagger);
 
 
-config.endpoints.forEach((endpoint) => {  
+endpoints.forEach((endpoint) => {  
   const method = endpoint.method.toLowerCase() as
     | "get"
     | "post"
@@ -92,7 +90,6 @@ app.get("*", (req,res) => {
 });
 
 const port = 3030;
-console.log(`Server is running on port ${port}`);
 
 app.listen(port, () => {
   console.log(`server running on http://localhost:${port}`);

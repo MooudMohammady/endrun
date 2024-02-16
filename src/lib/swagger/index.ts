@@ -1,9 +1,10 @@
-import express from "express";
+//@ts-ignore
 import swaggerJSDoc from "swagger-jsdoc";
+import express from "express";
 import { serve, setup } from "swagger-ui-express";
-import config from "../../../endrun.config";
-import { db } from "../db";
-import { Prisma, Product } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import endpoints from "../endpoints";
+import { IswaggerJSDoc } from "../@types/swagger";
 
 const options = {
   definition: {
@@ -34,9 +35,9 @@ const options = {
 
 const router = express.Router();
 
-const specs = swaggerJSDoc(options);
+const specs = swaggerJSDoc(options) as IswaggerJSDoc;
 
-config.endpoints.forEach((endpoint) => {
+endpoints.forEach((endpoint) => {
   const operation = endpoint.operation || "";
   let description = "";
   if (operation === "all") {
@@ -54,24 +55,25 @@ config.endpoints.forEach((endpoint) => {
     /:[a-zA-Z0-9_-]+/g,
     (match) => `{${match.slice(1)}}`
   );
-  //@ts-ignore
+
   if (!specs.paths[pathKey]) {
-    //@ts-ignore
     specs.paths[pathKey] = {};
   }
-  //@ts-ignore
+
   specs.paths[pathKey][endpoint.method.toLowerCase()] = {
     description: description,
     parameters: [],
-    requestBody: endpoint.method === "POST" || endpoint.method === "PUT" && {
-      content: {
-        "application/json": {
-          schema: {
-            $ref: `#/components/schemas/${endpoint.model.toLowerCase()}`, // Reference to Prisma model
+    requestBody:
+      endpoint.method === "POST" ||
+      (endpoint.method === "PUT" && {
+        content: {
+          "application/json": {
+            schema: {
+              $ref: `#/components/schemas/${endpoint.model.toLowerCase()}`, // Reference to Prisma model
+            },
           },
         },
-      },
-    },
+      }),
     responses: {
       200: {
         description: "Successful operation",
@@ -90,7 +92,6 @@ config.endpoints.forEach((endpoint) => {
   const dynamicParams = pathKey.match(/{[a-zA-Z0-9_-]+}/g) || [];
   for (const param of dynamicParams) {
     const paramName = param.slice(1, -1); // Remove leading ":"
-    //@ts-ignore
     specs.paths[pathKey][endpoint.method.toLowerCase()].parameters.push({
       name: paramName,
       in: "path",
@@ -103,45 +104,41 @@ config.endpoints.forEach((endpoint) => {
   }
 
   // Add components for Prisma models
-  //@ts-ignore
   specs.components = {
     schemas: {},
   };
-  //@ts-ignore
-  const model = endpoint.model.toLowerCase();
-  // Generate schemas for Prisma models
-    if (!model.startsWith("_") && !model.startsWith("$")) {
-      //@ts-ignore
-      specs.components.schemas[model] = {
-        type: "object",
-        properties: {}, // Properties for fields in the model
-      };
-      //@ts-ignore
-      let fields = Prisma.dmmf.datamodel.models.find(
-        (model) => model.name === endpoint.model
-        ).fields;
-        //@ts-ignore
-      console.log(specs.components.schemas);
-      //@ts-ignore
-      for (const field of fields) {
-        if (
-          field.name !== "id" &&
-          field.name !== "createdAt" &&
-          field.name !== "updatedAt"
-        ) {
-          
-          
-          //@ts-ignore
-          let modelSchema = specs.components.schemas[model]
-          //@ts-ignore
 
-          modelSchema.properties[field.name] = { type: field.type };
-        }
+  const model = endpoint.model.toLowerCase();
+
+  // Generate schemas for Prisma models
+  if (!model.startsWith("_") && !model.startsWith("$")) {
+
+    specs.components.schemas![model] = {
+      type: "object",
+      properties: {}, // Properties for fields in the model
+    };
+
+    let fields = Prisma.dmmf.datamodel.models.find(
+      (model) => model.name === endpoint.model
+    )!.fields;
+
+    console.log(specs.components.schemas);
+
+    for (const field of fields) {
+      if (
+        field.name !== "id" &&
+        field.name !== "createdAt" &&
+        field.name !== "updatedAt"
+      ) {
+
+        let modelSchema = specs.components.schemas![model];
+
+        modelSchema.properties[field.name] = { type: field.type };
       }
-      
     }
-  });
-  //@ts-ignore
+  }
+});
+
 
 console.log(specs.components.schemas);
 
