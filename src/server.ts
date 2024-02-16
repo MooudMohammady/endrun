@@ -1,4 +1,4 @@
-import Endrun from ".";
+import Endrun from "../";
 
 const PORT = process.env.PORT || 3030
 

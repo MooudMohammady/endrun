@@ -5,10 +5,9 @@
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/honojs/hono/ci.yml?branch=main)](https://github.com/MooudMohammady/endrun/actions)
 [![GitHub](https://img.shields.io/badge/License-GPL3.0-g)](https://github.com/MooudMohammady/endrun/blob/main/LICENSE)
-[![npm](https://img.shields.io/npm/v/hono)](https://www.npmjs.com/package/hono)
-[![minifide size - 29 KB](https://img.shields.io/badge/minifide_size-29_KB-blue)](https://)
+[![Bundle Size](https://img.shields.io/badge/minifide_size-29_KB-blue)](https://)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/hono)](https://bundlephobia.com/result?p=hono)
-[![npm type definitions](https://img.shields.io/npm/types/hono)](https://www.npmjs.com/package/hono)
+[![npm type definitions](https://img.shields.io/badge/types-TypeScript-blue)](https://github.com/MooudMohammady/endrun/commits/main)
 [![GitHub last commit](https://img.shields.io/badge/last_commit-today-g)](https://github.com/MooudMohammady/endrun/commits/main)
 
 # Endrun
