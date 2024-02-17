@@ -4,8 +4,9 @@
 <hr />
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/honojs/hono/ci.yml?branch=main)](https://github.com/MooudMohammady/endrun/actions)
-[![GitHub](https://img.shields.io/badge/License-GPL3.0-g)](https://github.com/MooudMohammady/endrun/blob/main/LICENSE)
-[![Bundle Size](https://img.shields.io/badge/minifide_size-29_KB-blue)](https://)
+[![GitHub](https://img.shields.io/badge/License-MIT-g)](https://github.com/MooudMohammady/endrun/blob/main/LICENSE)
+[![Bundle Size](https://img.shields.io/badge/minifide_size-29_kB-blue)](https://)
+[![Bundle Size](https://img.shields.io/badge/minzipped_size-8.5_kB-blue)](https://)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/hono)](https://bundlephobia.com/result?p=hono)
 [![npm type definitions](https://img.shields.io/badge/types-TypeScript-blue)](https://github.com/MooudMohammady/endrun/commits/main)
 [![GitHub last commit](https://img.shields.io/badge/last_commit-today-g)](https://github.com/MooudMohammady/endrun/commits/main)
@@ -61,7 +62,7 @@ new Endrun().startServer(PORT);
 
 and add the database address in the .env file :
 ```env
-// .env
+# .env
 
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/endrun
 ```
