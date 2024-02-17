@@ -15,12 +15,17 @@ interface Endpoint {
 class Endrun {
   private app: express.Application;
   private router: express.Router;
-  private prisma: PrismaClient;
+  private db: PrismaClient;
 
-  constructor() {
+  constructor(
+    customRoutes?: (router: express.Router, db: PrismaClient) => void
+  ) {
     this.app = express();
     this.router = express.Router();
-    this.prisma = new PrismaClient();
+    this.db = db;
+
+    // Add custom routes
+    if (customRoutes) customRoutes(this.router, this.db);
   }
 
   private setupEndpoints(endpoints: Endpoint[]) {
@@ -117,6 +122,4 @@ class Endrun {
   }
 }
 
-export {
-  Endrun
-}
+export { Endrun };

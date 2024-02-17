@@ -66,3 +66,20 @@ and add the database address in the .env file :
 
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/endrun
 ```
+
+you can add custom routes to Endrun class : 
+```ts
+new Endrun((router, db) => [
+  //base url /api
+  router.get("/", (req, res) => {
+    const result = db.product.findFirst();
+    res.json(result);
+  }),
+  router.post("/", async (req, res) => {
+    const result = db.product.create({
+      data: await req.body,
+    });
+    res.json(result);
+  }),
+]).startServer(PORT);
+```
