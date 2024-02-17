@@ -70,13 +70,14 @@ DATABASE_URL=postgres://postgres:postgres@localhost:5432/endrun
 you can add custom routes to Endrun class : 
 ```ts
 new Endrun((router, db) => [
-  //base url /api
-  router.get("/", (req, res) => {
-    const result = db.product.findFirst();
+  // base url /api
+  // If /products exists, it overrides it; otherwise, it creates a new endpoint.
+  router.get("/products", async (req, res) => {
+    const result = await db.product.findFirst();
     res.json(result);
   }),
   router.post("/", async (req, res) => {
-    const result = db.product.create({
+    const result = await db.product.create({
       data: await req.body,
     });
     res.json(result);
