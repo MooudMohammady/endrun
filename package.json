@@ -9,7 +9,7 @@
     "email": "MooudMohammadi@gmail.com",
     "name": "Mooud Mohammadi tabar"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "build": "tsup",
     "start": "node dist/index.js",
