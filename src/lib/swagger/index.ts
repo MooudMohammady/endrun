@@ -11,20 +11,20 @@ const options = {
     openapi: "3.0.0",
     info: {
       title: "Library API",
-      version: "1.0.0",
-      description: "A simple Express Library API",
-      termsOfService: "http://example.com/terms/",
+      version: "0.0.2",
+      description: "Endrun is a simple and powerful web API framework that dynamically generates endpoints and Swagger documentation based on database models using Prisma ORM.",
+      termsOfService: "https://github.com/MooudMohammady/endrun.git",
       contact: {
         name: "API Support",
-        url: "http://www.exmaple.com/support",
-        email: "support@example.com",
+        url: "https://github.com/MooudMohammady/endrun.git",
+        email: "mooudmohammadi@gmail.com",
       },
     },
 
     servers: [
       {
         url: "http://localhost:3030/api",
-        description: "My API Documentation",
+        description: "Simple demo API Documentation",
       },
     ],
 
@@ -131,7 +131,7 @@ endpoints.forEach((endpoint) => {
       ) {
         let modelSchema = specs.components.schemas![model];
 
-        modelSchema.properties[field.name] = { type: field.type };
+        modelSchema.properties[field.name] = { type: field.type.toLowerCase() };
       }
     }
   }

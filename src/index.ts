@@ -1,4 +1,6 @@
-import express, { Request, Response, NextFunction, Router } from "express";
+import express, { Request, Response, NextFunction } from "express";
+//@ts-ignore
+import Layer from "express/lib/router/layer";
 import { PrismaClient } from "@prisma/client";
 import endpoints from "./lib/endpoints";
 import { db } from "./lib/db";
@@ -9,23 +11,31 @@ import { swagger } from "./lib/swagger";
 interface Endpoint {
   method: "GET" | "POST" | "PUT" | "DELETE";
   route: string;
+  model: string;
   operation?: "all" | "one" | "search";
+}
+
+interface Options {
+  searchableModels?: string[];
+  withoutBodyParser?: string[];
 }
 
 class Endrun {
   private app: express.Application;
   private router: express.Router;
   private db: PrismaClient;
+  private config: Options;
 
   constructor(
-    customRoutes?: (router: express.Router, db: PrismaClient) => void
+    customRoutes?: (router: express.Router, db: PrismaClient) => void,
+    config?: Options
   ) {
     this.app = express();
     this.router = express.Router();
     this.db = db;
-
+    this.config = config || {};
     // Add custom routes
-    if (customRoutes) customRoutes(this.router, this.db);
+    if (customRoutes) customRoutes(this.router, this.db); //TODO add dynamic e.json();
   }
 
   private setupEndpoints(endpoints: Endpoint[]) {
@@ -35,7 +45,11 @@ class Endrun {
         | "post"
         | "put"
         | "delete";
-      this.router[method](endpoint.route, this.handleRequest(endpoint));
+      this.router[method](
+        endpoint.route,
+        express.json(),
+        this.handleRequest(endpoint)
+      );
     });
   }
 
@@ -58,16 +72,22 @@ class Endrun {
               });
               return res.json(result);
             case "search":
-              const apiFeatures = await new APIFeatures(
+              if (
+                !this.config.searchableModels ||
                 //@ts-ignore
-                db[endpoint.model.toLowerCase()],
-                prisma,
-                req.query
-              ).filter();
+                this.config.searchableModels.includes(endpoint.model)
+              ) {
+                const apiFeatures = await new APIFeatures(
+                  //@ts-ignore
+                  db[endpoint.model.toLowerCase()],
+                  prisma,
+                  req.query
+                ).filter();
 
-              result = await apiFeatures.query;
+                result = await apiFeatures.query;
 
-              return res.json(result);
+                return res.json(result);
+              }
           }
         } else if (req.method === "POST") {
           //@ts-ignore
@@ -92,8 +112,9 @@ class Endrun {
               id: req.params.id,
             },
           });
+          return res.send("Deleted");
         }
-        return res.send("Endpoint is working!");
+        return res.send("Endpoint notfound!");
       } catch (error) {
         console.error("Error handling request:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -102,9 +123,25 @@ class Endrun {
   }
 
   public startServer(port: number | string) {
-    // Middelwares
-    this.app.use(express.urlencoded({ extended: false }));
-    this.app.use(express.json());
+    // Add the bodyParser middleware to all routes.
+    this.router.stack.forEach((layer) => {
+      if (layer.route) {
+        const jsonLayer = new Layer("/", {}, express.json());
+        layer.route.stack.unshift(jsonLayer);
+      }
+    });
+    
+    //Remove bodyParser from the specified routes provided in the configuration.
+    this.config.withoutBodyParser &&
+      this.config.withoutBodyParser.forEach((path) => {
+        this.router.stack.forEach((layer) => {
+          if (layer.route && layer.route.path === path) {
+            layer.route.stack = layer.route.stack.filter(
+              (item: any) => item.name !== "jsonParser"
+            );
+          }
+        });
+      });
 
     // Setup swagger docs
     this.app.use("/swagger", swagger);
@@ -112,8 +149,15 @@ class Endrun {
     // Setup routes
     this.setupEndpoints(endpoints);
 
+    console.log(this.router.stack[0].route.stack);
+
     // Use the router for all API routes
     this.app.use("/api", this.router);
+
+    // Setup notfound route
+    this.app.use("*", (req, res) => {
+      return res.send("Notfound! 404");
+    });
 
     // Start the server
     this.app.listen(port, () => {

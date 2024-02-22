@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@types/express": "^4.17.21",
     "@types/node": "^20.11.17",
     "@types/swagger-ui-express": "^4.1.6",
     "nodemon": "^3.0.3",
